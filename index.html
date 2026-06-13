@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MCN: Gestational Diabetes – Adele Pillitteri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        .transition-all { transition: all 0.3s ease; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #b45309; border-radius: 8px; }
+        .recall-mode .reveal-text {
+            background-color: #cbd5e1;
+            color: transparent;
+            border-radius: 0.375rem;
+            padding: 0 0.25rem;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            box-shadow: inset 0 0 0 1px #94a3b8;
+        }
+        .recall-mode .reveal-text:hover,
+        .recall-mode .reveal-text.revealed {
+            background-color: #fde047;
+            color: #1e293b;
+            box-shadow: none;
+        }
+        .content-section { animation: fade 0.3s ease; }
+        @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .locked-section { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+        .quiz-feedback-correct { background-color: #dcfce7; border-left: 4px solid #22c55e; }
+        .quiz-feedback-wrong { background-color: #fee2e2; border-left: 4px solid #ef4444; }
+        .nav-btn.active { background-color: #ffedd5; color: #9a3412; border-right: 4px solid #ea580c; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { gdm: { light: '#ffedd5', DEFAULT: '#ea580c', dark: '#9a3412' } } } }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 h-screen flex flex-col md:flex-row font-sans text-slate-800 overflow-hidden">
+
+    <!-- Mobile Header -->
+    <div class="md:hidden bg-gdm-dark text-white p-4 flex justify-between items-center shadow-md z-30 shrink-0">
+        <button onclick="toggleMobileMenu()" class="text-white focus:outline-none z-40"><i class="fa-solid fa-bars text-2xl"></i></button>
+        <h1 class="font-bold text-lg absolute left-1/2 transform -translate-x-1/2 pointer-events-none"><i class="fa-solid fa-droplet mr-2"></i> Gestational Diabetes</h1>
+        <div class="w-8"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="hidden md:flex flex-col w-full md:w-80 bg-white shadow-2xl h-full absolute md:relative z-30 transition-all duration-300 shrink-0 border-r border-slate-200 overflow-y-auto">
+        <div class="p-6 bg-gradient-to-br from-gdm-dark to-gdm text-white hidden md:block shrink-0">
+            <h1 class="font-black text-2xl tracking-wide"><i class="fa-solid fa-droplet text-gdm-light mr-2"></i> Gestational Diabetes</h1>
+            <p class="text-sm text-slate-300 mt-1">Adele Pillitteri · Maternal‑Child Nursing</p>
+        </div>
+        <div class="flex-1 py-4">
+            <ul class="space-y-1 text-sm font-medium">
+                <li><button onclick="showSection('home')" id="btn-home" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors"><i class="fa-solid fa-house w-6 nav-icon"></i><i class="fa-solid fa-lock w-6 hidden text-slate-400"></i> Home / Start</button></li>
+                <li><button onclick="showSection('intro')" id="btn-intro" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-book-open w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> 1. Introduction & Risk Factors</button></li>
+                <li><button onclick="showSection('patho')" id="btn-pathi" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-microscope w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> 2. Pathophysiology & Screening</button></li>
+                <li><button onclick="showSection('diagnosis')" id="btn-diagnosis" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-chart-line w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> 3. Diagnosis & Classification</button></li>
+                <li><button onclick="showSection('management')" id="btn-management" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-apple-alt w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> 4. Management & Treatment</button></li>
+                <li><button onclick="showSection('complications')" id="btn-complications" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-exclamation-triangle w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> 5. Maternal & Fetal Complications</button></li>
+                <li><button onclick="showSection('nursing')" id="btn-nursing" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-user-nurse w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> 6. Nursing Role & Education</button></li>
+                <li><button onclick="showSection('mnemonics')" id="btn-mnemonics" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-brain w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> 7. Mnemonic Appendix</button></li>
+                <li><button onclick="showSection('final_quiz_sec')" id="btn-final_quiz_sec" class="nav-btn w-full text-left px-6 py-3 hover:bg-slate-50 transition-colors border-t border-slate-200 mt-2 locked-section"><i class="fa-solid fa-graduation-cap w-6 text-amber-500 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Final 50‑Item Exam</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 h-full overflow-y-auto bg-slate-100 relative w-full">
+        <div class="fixed top-16 md:top-4 right-4 md:right-8 z-40 flex items-center bg-white/90 backdrop-blur px-4 py-3 rounded-full shadow-lg border border-slate-200 cursor-pointer hover:bg-slate-50" onclick="toggleRecallMode()">
+            <span class="mr-3 text-sm font-bold text-slate-700 hidden md:inline"><i class="fa-solid fa-brain text-gdm mr-1"></i> Active Recall</span>
+            <span class="mr-3 text-sm font-bold text-slate-700 md:hidden"><i class="fa-solid fa-brain text-gdm"></i></span>
+            <button id="recall-toggle" class="w-12 h-6 bg-slate-300 rounded-full relative transition-colors duration-300 focus:outline-none shadow-inner pointer-events-none">
+                <div id="recall-knob" class="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform duration-300 shadow"></div>
+            </button>
+        </div>
+
+        <div class="p-4 md:p-8 max-w-6xl mx-auto pb-32">
+            <!-- HOME -->
+            <section id="home" class="content-section flex flex-col items-center justify-center min-h-[80vh] text-center block">
+                <div class="bg-gradient-to-br from-slate-800 to-gdm-dark text-white rounded-3xl shadow-2xl p-10 md:p-16 w-full relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-10 -mr-10 text-white opacity-5"><i class="fa-solid fa-syringe text-[20rem]"></i></div>
+                    <div class="relative z-10">
+                        <div class="bg-white/10 backdrop-blur-sm inline-block p-4 rounded-full text-gdm-light mb-6"><i class="fa-solid fa-droplet text-5xl"></i></div>
+                        <h3 class="text-xl font-bold text-slate-300 mb-2 uppercase">Maternal‑Child Nursing · Adele Pillitteri</h3>
+                        <h1 class="text-4xl md:text-6xl font-black leading-tight drop-shadow-md">Gestational Diabetes</h1>
+                        <p class="text-lg max-w-2xl mx-auto mt-6 text-slate-200">Carbohydrate intolerance first recognized during pregnancy. Understand risk factors, screening, management, and maternal/fetal complications to optimize outcomes.</p>
+                        <button onclick="unlockFirstSection()" class="mt-10 bg-slate-600 hover:bg-slate-500 text-white font-black py-4 px-12 rounded-full shadow-xl transition-transform hover:scale-105 text-lg flex items-center mx-auto">Begin Module <i class="fa-solid fa-arrow-right ml-3"></i></button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 1: Introduction & Risk Factors -->
+            <section id="intro" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-gdm pb-3"><i class="fa-solid fa-book-open text-gdm mr-4"></i> Introduction & Risk Factors</h2>
+                    <div class="bg-gdm-light/20 border-l-4 border-gdm p-4 rounded-r mb-6">Gestational Diabetes Mellitus (GDM) is glucose intolerance that begins or is first diagnosed during pregnancy. It affects ~7–14% of pregnancies globally and increases maternal and fetal risks.</div>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div class="bg-slate-50 p-4 rounded-xl"><strong class="text-gdm">👩 Risk Factors (High Risk)</strong><br>• Marked obesity (BMI ≥30)<br>• Previous GDM or macrosomic infant (>4000g)<br>• Family history of diabetes (first-degree relative)<br>• Polycystic ovary syndrome (PCOS)<br>• Maternal age >35 years<br>• Certain ethnic groups (Hispanic, African American, Native American, Asian)</div>
+                        <div class="bg-slate-50 p-4 rounded-xl"><strong class="text-gdm">🔬 Moderate Risk Factors</strong><br>• Age 25–35, overweight (BMI 25–29.9),<br>• Previous poor obstetric history (stillbirth, congenital anomalies)<br>• Hypertensive disorders in pregnancy</div>
+                    </div>
+                    <button onclick="openQuiz('intro')" class="mt-8 w-full bg-gdm text-white font-black py-4 rounded-xl shadow-md hover:bg-gdm-dark transition-colors text-lg"><i class="fa-solid fa-list-check mr-3"></i> Take 10-Item Quiz (Unlocks next section)</button>
+                </div>
+            </section>
+
+            <!-- Section 2: Pathophysiology & Screening -->
+            <section id="patho" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-gdm pb-3"><i class="fa-solid fa-microscope text-gdm mr-4"></i> Pathophysiology & Screening</h2>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>Pathophysiology:</strong> Pregnancy induces insulin resistance via human placental lactogen (hPL), progesterone, cortisol, and TNF‑α. In GDM, pancreatic β‑cells cannot compensate → hyperglycemia.</li>
+                        <li><strong>Screening timing:</strong> Universal screening at 24–28 weeks. High‑risk women may be screened earlier (first trimester) and repeated if normal.</li>
+                        <li><strong>Two‑step approach (ACOG):</strong> 50g glucose challenge test (GCT) → 1‑hour plasma glucose ≥130–140 mg/dL → 100g oral glucose tolerance test (OGTT) for diagnosis.</li>
+                        <li><strong>One‑step approach (IADPSG/WHO):</strong> 75g OGTT at 24–28 weeks, fasting, 1h, 2h levels. Used by many institutions.</li>
+                    </ul>
+                    <div class="bg-amber-50 p-2 rounded-lg mt-2 text-sm">⚠️ Women at very high risk (previous GDM, obesity, strong family history) should be screened at first prenatal visit.</div>
+                    <button onclick="openQuiz('patho')" class="mt-8 w-full bg-gdm text-white font-black py-4 rounded-xl shadow-md hover:bg-gdm-dark transition-colors text-lg"><i class="fa-solid fa-list-check mr-3"></i> Take 10-Item Quiz (Unlocks next section)</button>
+                </div>
+            </section>
+
+            <!-- Section 3: Diagnosis & Classification -->
+            <section id="diagnosis" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-gdm pb-3"><i class="fa-solid fa-chart-line text-gdm mr-4"></i> Diagnosis & Classification</h2>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div class="bg-slate-50 p-4 rounded-xl"><strong class="text-gdm">🧪 Two‑step Diagnostic Criteria (Carpenter‑Coustan)</strong><br>100g OGTT – plasma glucose (mg/dL):<br>Fasting ≥95, 1h ≥180, 2h ≥155, 3h ≥140. Two or more elevated → GDM.</div>
+                        <div class="bg-slate-50 p-4 rounded-xl"><strong class="text-gdm">📊 One‑step (IADPSG/WHO)</strong><br>75g OGTT – fasting ≥92, 1h ≥180, 2h ≥153. One or more elevated → GDM.</div>
+                    </div>
+                    <ul class="list-disc pl-6 mt-3 space-y-1">
+                        <li><strong>Class A1:</strong> Diet‑controlled GDM (normal fasting glucose).</li>
+                        <li><strong>Class A2:</strong> GDM requiring medication (insulin or oral hypoglycemic).</li>
+                    </ul>
+                    <button onclick="openQuiz('diagnosis')" class="mt-8 w-full bg-gdm text-white font-black py-4 rounded-xl shadow-md hover:bg-gdm-dark transition-colors text-lg"><i class="fa-solid fa-list-check mr-3"></i> Take 10-Item Quiz (Unlocks next section)</button>
+                </div>
+            </section>
+
+            <!-- Section 4: Management & Treatment -->
+            <section id="management" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-gdm pb-3"><i class="fa-solid fa-apple-alt text-gdm mr-4"></i> Management & Treatment</h2>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>Medical Nutrition Therapy (MNT):</strong> Calorie prescription based on BMI (1800–2400 kcal/day). Carbohydrate distribution (3 meals + 2–3 snacks). Limit simple sugars. Small, frequent meals.</li>
+                        <li><strong>Self‑monitoring of blood glucose (SMBG):</strong> Fasting and 1‑ or 2‑hour postprandial levels. Targets: fasting <95 mg/dL, 1h <140 mg/dL, 2h <120 mg/dL.</li>
+                        <li><strong>Exercise:</strong> Walking, swimming, stationary bike (30 min most days).</li>
+                        <li><strong>Insulin therapy:</strong> First‑line pharmacologic agent when MNT fails. Lispro or aspart preferred for prandial, NPH for basal. Insulin does not cross placenta.</li>
+                        <li><strong>Oral hypoglycemics:</strong> Metformin and glyburide may be used but not FDA‑approved specifically for GDM; some studies raise concerns about neonatal hypoglycemia.</li>
+                    </ul>
+                    <button onclick="openQuiz('management')" class="mt-8 w-full bg-gdm text-white font-black py-4 rounded-xl shadow-md hover:bg-gdm-dark transition-colors text-lg"><i class="fa-solid fa-list-check mr-3"></i> Take 10-Item Quiz (Unlocks next section)</button>
+                </div>
+            </section>
+
+            <!-- Section 5: Maternal & Fetal Complications -->
+            <section id="complications" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-gdm pb-3"><i class="fa-solid fa-exclamation-triangle text-gdm mr-4"></i> Maternal & Fetal Complications</h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-slate-50 p-3 rounded-lg"><strong class="text-gdm">👩 Maternal</strong><br>• Preeclampsia<br>• Polyhydramnios<br>• Preterm labor<br>• Cesarean delivery (due to macrosomia)<br>• Postpartum hemorrhage<br>• Future type 2 diabetes (50–70% within 10 years)</div>
+                        <div class="bg-slate-50 p-3 rounded-lg"><strong class="text-gdm">👶 Fetal/Neonatal</strong><br>• Macrosomia (>4000–4500g) → shoulder dystocia, birth trauma<br>• Neonatal hypoglycemia (due to fetal hyperinsulinemia)<br>• Respiratory distress syndrome (delayed surfactant)<br>• Polycythemia, hyperbilirubinemia<br>• Stillbirth (rare with good glycemic control)<br>• Childhood obesity and type 2 diabetes later in life</div>
+                    </div>
+                    <button onclick="openQuiz('complications')" class="mt-8 w-full bg-gdm text-white font-black py-4 rounded-xl shadow-md hover:bg-gdm-dark transition-colors text-lg"><i class="fa-solid fa-list-check mr-3"></i> Take 10-Item Quiz (Unlocks next section)</button>
+                </div>
+            </section>
+
+            <!-- Section 6: Nursing Role & Education -->
+            <section id="nursing" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-gdm pb-3"><i class="fa-solid fa-user-nurse text-gdm mr-4"></i> Nursing Role & Patient Education</h2>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>Education:</strong> Teach glucose monitoring technique, target ranges, meal planning, sick day management, and signs of hypoglycemia (sweating, tremor, dizziness).</li>
+                        <li><strong>Medication teaching:</strong> Insulin injection technique, storage, rotation sites. Hypoglycemia treatment (15g carb rule).</li>
+                        <li><strong>Fetal surveillance:</strong> Non‑stress tests (NST), biophysical profile (BPP) starting at 32–34 weeks if on medication or poor control.</li>
+                        <li><strong>Intrapartum management:</strong> Maintain glucose 70–110 mg/dL with insulin drip if needed. Monitor fetal heart rate closely.</li>
+                        <li><strong>Postpartum care:</strong> Check fasting glucose before discharge. Glucose tolerance test (75g OGTT) at 6–12 weeks to rule out persistent diabetes. Encourage breastfeeding (reduces future diabetes risk for mother and child).</li>
+                    </ul>
+                    <button onclick="openQuiz('nursing')" class="mt-8 w-full bg-gdm text-white font-black py-4 rounded-xl shadow-md hover:bg-gdm-dark transition-colors text-lg"><i class="fa-solid fa-list-check mr-3"></i> Take 10-Item Quiz (Unlocks next section)</button>
+                </div>
+            </section>
+
+            <!-- Section 7: Mnemonics -->
+            <section id="mnemonics" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-gdm pb-3"><i class="fa-solid fa-brain text-gdm mr-4"></i> Mnemonic Appendix</h2>
+                    <div class="overflow-x-auto rounded-xl border">
+                        <table class="w-full text-left text-sm md:text-base"><thead class="bg-gdm-dark text-white"><tr><th class="p-3">Topic</th><th class="p-3">Mnemonic</th><th class="p-3">Meaning</th></tr></thead>
+                        <tbody><tr><td class="p-3 font-semibold">Risk factors for GDM</span></td><td class="font-black">O A F P A</span></td><td class="reveal-text">Obesity, Age >35, Family history, Previous GDM, PCOS/ethnicity</span></td>
+                        <tr class="bg-slate-50"><td class="p-3 font-semibold">Two‑step diagnostic OGTT thresholds</span></td><td class="font-black">95‑180‑155‑140</span></td><td class="reveal-text">Fasting 95, 1h 180, 2h 155, 3h 140 (Carpenter‑Coustan)</span></td>
+                        <tr><td class="p-3 font-semibold">Fetal/neonatal complications</span></td><td class="font-black">M H R P</span></td><td class="reveal-text">Macrosomia, Hypoglycemia, Respiratory distress, Polycythemia</span></td>
+                        <tr class="bg-slate-50"><td class="p-3 font-semibold">Maternal complications</span></td><td class="font-black">P P C P</span></td><td class="reveal-text">Preeclampsia, Polyhydramnios, Cesarean, Postpartum hemorrhage</span></td>
+                        <tr><td class="p-3 font-semibold">Insulin types for GDM</span></td><td class="font-black">N L A</span></td><td class="reveal-text">NPH (basal), Lispro/Aspart (prandial)</span></td>
+                        </tbody>
+                    </table>
+                    <button onclick="openQuiz('final_quiz')" class="mt-8 w-full bg-amber-500 text-slate-900 font-black py-4 rounded-xl shadow-md hover:bg-amber-400 text-lg"><i class="fa-solid fa-graduation-cap mr-3"></i> Take Final 50‑Item Exam</button>
+                </div>
+            </section>
+
+            <!-- Final Quiz Section -->
+            <section id="final_quiz_sec" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-8 text-center min-h-[60vh] flex flex-col justify-center items-center">
+                    <i class="fa-solid fa-graduation-cap text-8xl text-amber-400 mb-6"></i>
+                    <h2 class="text-4xl font-black text-slate-800 mb-4">Final 50‑Item Exam</h2>
+                    <p class="text-lg text-slate-600 mb-8">Covers all sections. 75% required to pass.</p>
+                    <button onclick="openQuiz('final_quiz')" class="w-full max-w-md bg-gdm-dark text-white font-black py-4 rounded-xl shadow-md hover:bg-gdm text-xl">Start Final Exam</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Quiz Modal -->
+    <div id="quiz-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeQuiz()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            <h2 id="quiz-title" class="text-3xl font-black text-slate-800 mb-2"></h2>
+            <p class="text-slate-600 mb-6 font-medium border-b pb-4">Score ≥75% to unlock next section.</p>
+            <div id="quiz-questions-container" class="space-y-4"></div>
+            <button id="quiz-submit-btn" onclick="submitQuiz()" class="mt-8 w-full bg-gdm text-white font-bold py-4 rounded-xl shadow-lg text-lg">Submit Answers</button>
+            <div id="quiz-result-container" class="hidden mt-6 p-4 rounded-xl bg-slate-100 border"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            let unlockedSections = ['home'];
+            // Quiz data – 10 questions each for 6 sections
+            const quizzes = {
+                intro: {
+                    title: "Quiz 1: Introduction & Risk Factors (10 items)",
+                    next: "patho",
+                    questions: [
+                        { q: "Gestational diabetes is defined as:", options: ["Preexisting diabetes diagnosed during pregnancy", "Glucose intolerance first recognized during pregnancy", "Type 1 diabetes diagnosed after delivery", "Impaired fasting glucose only"], ans: 1 },
+                        { q: "Which of the following is a major risk factor for GDM?", options: ["Maternal age <20 years", "History of preterm birth", "First‑degree relative with diabetes", "Low BMI"], ans: 2 },
+                        { q: "The incidence of GDM is approximately:", options: ["1–2%", "7–14%", "25–30%", "50%"], ans: 1 },
+                        { q: "Which ethnic group has the highest risk for GDM?", options: ["Caucasian", "African American", "Asian, Hispanic, Native American", "No difference"], ans: 2 },
+                        { q: "A woman with PCOS is at increased risk for GDM because of:", options: ["Chronic anovulation", "Insulin resistance", "Low androgens", "Normal glucose metabolism"], ans: 1 },
+                        { q: "Prior delivery of a macrosomic infant (>4000g) is associated with:", options: ["Decreased GDM risk", "Increased GDM risk", "No change in risk", "Only if maternal obesity"], ans: 1 },
+                        { q: "Routine screening for GDM is recommended at:", options: ["First trimester", "24–28 weeks", "32–36 weeks", "After delivery"], ans: 1 },
+                        { q: "Which BMI category indicates obesity and increased GDM risk?", options: ["<18.5", "18.5–24.9", "25–29.9", "≥30"], ans: 3 },
+                        { q: "Women with GDM have a lifetime risk of developing type 2 diabetes of approximately:", options: ["10%", "25%", "50–70%", "90%"], ans: 2 },
+                        { q: "Which of the following is NOT a risk factor for GDM?", options: ["Previous GDM", "Maternal age <25 years", "Family history of diabetes", "Polycystic ovary syndrome"], ans: 1 }
+                    ]
+                },
+                patho: {
+                    title: "Quiz 2: Pathophysiology & Screening (10 items)",
+                    next: "diagnosis",
+                    questions: [
+                        { q: "Which placental hormone contributes most to insulin resistance in pregnancy?", options: ["Estrogen", "Progesterone", "Human placental lactogen (hPL)", "hCG"], ans: 2 },
+                        { q: "In GDM, the maternal pancreas:", options: ["Produces no insulin", "Has increased insulin secretion but insufficient to overcome resistance", "Becomes atrophic", "Produces only proinsulin"], ans: 1 },
+                        { q: "The 50‑g glucose challenge test (GCT) is considered abnormal if 1‑hour plasma glucose is:", options: [">100 mg/dL", "≥130–140 mg/dL", "≥180 mg/dL", "≥200 mg/dL"], ans: 1 },
+                        { q: "High‑risk women should be screened for GDM:", options: ["Only at 28 weeks", "At first prenatal visit and again at 24–28 weeks if normal", "Only after 32 weeks", "Never"], ans: 1 },
+                        { q: "Which of the following statements about glucose screening is true?", options: ["All women need 3‑hour OGTT", "Fasting is required for the 1‑hour GCT", "The 1‑hour GCT can be done non‑fasting", "Screening is not needed in normal weight women"], ans: 2 },
+                        { q: "Human placental lactogen promotes insulin resistance to:", options: ["Prevent maternal hypoglycemia and ensure glucose supply to fetus", "Cause maternal diabetes", "Reduce fetal growth", "Increase placental blood flow"], ans: 0 },
+                        { q: "A 1‑hour GCT result of 160 mg/dL should be followed by:", options: ["Diagnosis of GDM", "3‑hour 100g OGTT", "Repeat 1‑hour test", "Diet education only"], ans: 1 },
+                        { q: "Screening for GDM is recommended for all pregnant women because:", options: ["GDM is always symptomatic", "Early detection reduces perinatal complications", "All women with GDM require insulin", "It prevents preterm labor"], ans: 1 },
+                        { q: "The pathophysiology of GDM involves:", options: ["Autoimmune destruction of β‑cells", "Insulin resistance relative to β‑cell compensation", "Decreased hepatic glucose production", "Increased insulin sensitivity"], ans: 1 },
+                        { q: "Which of the following hormones decreases insulin sensitivity during pregnancy?", options: ["Estrogen only", "Progesterone and cortisol", "hCG", "Oxytocin"], ans: 1 }
+                    ]
+                },
+                diagnosis: {
+                    title: "Quiz 3: Diagnosis & Classification (10 items)",
+                    next: "management",
+                    questions: [
+                        { q: "Using the Carpenter‑Coustan criteria for 100g OGTT, which value indicates GDM?", options: ["Fasting ≥126 mg/dL", "2h ≥200 mg/dL", "Fasting ≥95 mg/dL and 1h ≥180 mg/dL", "Any single value elevated"], ans: 2 },
+                        { q: "How many elevated values are required to diagnose GDM with the 100g OGTT (Carpenter‑Coustan)?", options: ["One", "Two or more", "Three", "All four"], ans: 1 },
+                        { q: "Class A1 GDM is characterized by:", options: ["Normal fasting glucose, diet‑controlled", "Requires insulin", "Postpartum diabetes", "Ketonuria"], ans: 0 },
+                        { q: "Class A2 GDM requires:", options: ["Diet only", "Insulin or oral hypoglycemic agents", "Hospitalization", "Bed rest"], ans: 1 },
+                        { q: "The IADPSG one‑step 75g OGTT uses a fasting threshold of:", options: ["≥95 mg/dL", "≥92 mg/dL", "≥105 mg/dL", "≥126 mg/dL"], ans: 1 },
+                        { q: "A pregnant woman with GDM who maintains fasting glucose <95 mg/dL and postprandial <120 mg/dL with diet is classified as:", options: ["Class A2", "Class A1", "Class B", "Gestational diabetes not specified"], ans: 1 },
+                        { q: "The purpose of universal screening at 24–28 weeks is to:", options: ["Diagnose pregestational diabetes", "Identify women who will require insulin", "Reduce macrosomia and associated complications", "Predict future type 1 diabetes"], ans: 2 },
+                        { q: "Which of the following is an advantage of the two‑step approach?", options: ["Lower cost, fewer false positives", "Single test", "No need for follow‑up", "More specific for type 2 diabetes"], ans: 0 },
+                        { q: "A woman with GDM who requires insulin for glycemic control is at higher risk for:", options: ["Postpartum diabetes", "Preterm labor", "Preeclampsia", "All of the above"], ans: 3 },
+                        { q: "The diagnosis of GDM can be made with a single fasting glucose value of:", options: ["≥95 mg/dL", "≥126 mg/dL", "≥140 mg/dL", "≥200 mg/dL"], ans: 1 }
+                    ]
+                },
+                management: {
+                    title: "Quiz 4: Management & Treatment (10 items)",
+                    next: "complications",
+                    questions: [
+                        { q: "Recommended fasting glucose target for women with GDM is:", options: ["<80 mg/dL", "<95 mg/dL", "<110 mg/dL", "<126 mg/dL"], ans: 1 },
+                        { q: "Postprandial glucose goal 1‑hour after meals is typically:", options: ["<120 mg/dL", "<140 mg/dL", "<160 mg/dL", "<180 mg/dL"], ans: 1 },
+                        { q: "First‑line pharmacologic treatment for GDM not controlled by diet is:", options: ["Metformin", "Insulin", "Glyburide", "Pioglitazone"], ans: 1 },
+                        { q: "Which insulin type is most commonly used for prandial coverage in GDM?", options: ["NPH", "Lispro or aspart", "Regular insulin", "Glargine"], ans: 1 },
+                        { q: "Recommended exercise for GDM includes all EXCEPT:", options: ["Walking 30 minutes daily", "Swimming", "High‑intensity weightlifting", "Stationary bike"], ans: 2 },
+                        { q: "A woman with GDM reports dizziness and sweating. The nurse should first:", options: ["Give insulin", "Check blood glucose (rule out hypoglycemia)", "Give a snack", "Notify provider"], ans: 1 },
+                        { q: "Which of the following is NOT a component of medical nutrition therapy for GDM?", options: ["Three small meals plus 2–3 snacks", "High‑simple‑carbohydrate diet", "Avoidance of concentrated sweets", "Individualized calorie prescription"], ans: 1 },
+                        { q: "Insulin does not cross the placenta significantly. This is important because:", options: ["It prevents fetal hyperinsulinemia", "It can be used safely in pregnancy", "It causes neonatal hypoglycemia", "Both A and B"], ans: 3 },
+                        { q: "A woman with GDM on insulin has a fasting glucose of 60 mg/dL. The nurse should:", options: ["Administer 15g of rapid‑acting carbohydrate (juice, glucose tabs)", "Give insulin immediately", "Call the provider", "Wait 30 minutes"], ans: 0 },
+                        { q: "Self‑monitoring of blood glucose in GDM should be done at least:", options: ["Once daily", "Fasting and 1–2h postprandial", "Only if symptomatic", "Weekly"], ans: 1 }
+                    ]
+                },
+                complications: {
+                    title: "Quiz 5: Maternal & Fetal Complications (10 items)",
+                    next: "nursing",
+                    questions: [
+                        { q: "The most common fetal complication of poorly controlled GDM is:", options: ["Intrauterine growth restriction", "Macrosomia", "Microcephaly", "Hydrops fetalis"], ans: 1 },
+                        { q: "Neonatal hypoglycemia occurs in GDM due to:", options: ["Maternal hypoglycemia", "Fetal hyperinsulinemia (beta‑cell hyperplasia)", "Placental insufficiency", "Prematurity"], ans: 1 },
+                        { q: "Shoulder dystocia is associated with:", options: ["Preterm birth", "Macrosomia", "IUGR", "Polyhydramnios"], ans: 1 },
+                        { q: "Maternal complications of GDM include:", options: ["Preeclampsia, polyhydramnios, cesarean delivery", "Placenta previa", "Preterm premature rupture of membranes only", "Postpartum hemorrhage exclusively"], ans: 0 },
+                        { q: "Newborns of mothers with GDM are at risk for:", options: ["Respiratory distress syndrome", "Polycythemia and hyperbilirubinemia", "Hypocalcemia", "All of the above"], ans: 3 },
+                        { q: "Women with GDM have a significantly increased lifetime risk of:", options: ["Type 1 diabetes", "Type 2 diabetes", "Gestational diabetes only", "Thyroid disease"], ans: 1 },
+                        { q: "Poorly controlled GDM in early pregnancy may increase risk of:", options: ["Neural tube defects and congenital anomalies", "Miscarriage only", "Preterm birth only", "Placenta accreta"], ans: 0 },
+                        { q: "Fetal hyperinsulinemia leads to:", options: ["Accelerated fetal growth (macrosomia)", "Delayed lung maturation", "Neonatal hypoglycemia after birth", "All of the above"], ans: 3 },
+                        { q: "Polyhydramnios in GDM is thought to be due to:", options: ["Fetal polyuria secondary to hyperglycemia", "Decreased fetal swallowing", "Placental edema", "Maternal diabetes insipidus"], ans: 0 },
+                        { q: "Stillbirth risk in GDM is increased if:", options: ["Fasting glucose is well controlled", "Glycemic control is poor and there is associated preeclampsia", "Mother is on insulin", "Gestational age <37 weeks"], ans: 1 }
+                    ]
+                },
+                nursing: {
+                    title: "Quiz 6: Nursing Role & Education (10 items)",
+                    next: "mnemonics",
+                    questions: [
+                        { q: "The nurse should teach a patient with GDM to treat hypoglycemia with:", options: ["Insulin injection", "15g of rapid‑acting carbohydrate (glucose tablets, juice)", "High‑fat snack", "Water"], ans: 1 },
+                        { q: "When should a postpartum glucose tolerance test be performed to rule out persistent diabetes?", options: ["2 weeks", "6–12 weeks", "6 months", "1 year"], ans: 1 },
+                        { q: "Which of the following statements about breastfeeding and GDM is correct?", options: ["Breastfeeding should be discouraged", "Breastfeeding reduces maternal risk of future type 2 diabetes", "Breastfeeding increases blood glucose", "No effect"], ans: 1 },
+                        { q: "Fetal surveillance for women with GDM on medication typically begins at:", options: ["20 weeks", "32–34 weeks", "36 weeks", "38 weeks"], ans: 1 },
+                        { q: "Intrapartum glucose targets for women on insulin are:", options: ["70–110 mg/dL", "<60 mg/dL", ">200 mg/dL", "No target needed"], ans: 0 },
+                        { q: "The nurse should instruct a patient on insulin about:", options: ["Rotating injection sites, proper storage, and sick day management", "Doubling dose if feeling unwell", "Skipping insulin when not eating", "No precautions needed"], ans: 0 },
+                        { q: "A woman with GDM asks about oral contraceptives postpartum. The nurse advises:", options: ["Combined oral contraceptives are contraindicated", "Progestin‑only pills are safe; estrogen may increase thrombotic risk", "No contraception needed", "IUD only"], ans: 1 },
+                        { q: "Sick day management for GDM includes:", options: ["Continue insulin, monitor glucose frequently, stay hydrated, contact provider", "Stop insulin, drink only water, wait 24 hours", "Double insulin dose", "Eat only soup"], ans: 0 },
+                        { q: "The primary reason for postpartum glucose testing is to:", options: ["Diagnose breastfeeding problems", "Identify women with undiagnosed pregestational diabetes", "Predict future pregnancy outcomes", "Determine need for insulin"], ans: 1 },
+                        { q: "The nurse should encourage lifestyle modifications to prevent type 2 diabetes, including:", options: ["Weight loss, healthy diet, regular exercise", "Metformin alone", "Bariatric surgery", "Fasting"], ans: 0 }
+                    ]
+                }
+            };
+            
+            // Build final 50‑item exam (10 from each of the 6 sections above; we'll take 8-10 each to make 50)
+            let finalQuestions = [];
+            for(let sec of ['intro','patho','diagnosis','management','complications','nursing']) {
+                finalQuestions = finalQuestions.concat(quizzes[sec].questions.slice(0,9));
+            }
+            while(finalQuestions.length < 50) finalQuestions.push({ q: "What is the most common neonatal complication of GDM?", options: ["Hypoglycemia", "Hyperbilirubinemia", "Polycythemia", "Respiratory distress"], ans: 0 });
+            quizzes['final_quiz'] = { title: "Final 50‑Item Exam: Gestational Diabetes", next: null, questions: finalQuestions.slice(0,50) };
+            
+            // Global functions
+            window.unlockedSections = unlockedSections;
+            window.quizzes = quizzes;
+            
+            window.unlockFirstSection = function() {
+                if(!unlockedSections.includes('intro')) {
+                    unlockedSections.push('intro');
+                    updateSidebarUI();
+                }
+                showSection('intro');
+            };
+            
+            window.showSection = function(id) {
+                if(!unlockedSections.includes(id) && id !== 'home') {
+                    alert("Complete the previous section quiz (≥75%) to unlock this content.");
+                    return;
+                }
+                document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
+                const target = document.getElementById(id);
+                if(target) target.classList.remove('hidden');
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                const activeBtn = document.getElementById('btn-'+id);
+                if(activeBtn) activeBtn.classList.add('active');
+                if(window.innerWidth < 768) document.getElementById('sidebar')?.classList.add('hidden');
+                document.querySelector('main').scrollTop = 0;
+            };
+            
+            function updateSidebarUI() {
+                const all = ['home','intro','patho','diagnosis','management','complications','nursing','mnemonics','final_quiz_sec'];
+                all.forEach(sec => {
+                    const btn = document.getElementById('btn-'+sec);
+                    if(!btn) return;
+                    const lockIcon = btn.querySelector('.fa-lock'), mainIcon = btn.querySelector('.nav-icon');
+                    if(unlockedSections.includes(sec) || sec === 'home') {
+                        btn.classList.remove('locked-section');
+                        if(lockIcon) lockIcon.classList.add('hidden');
+                        if(mainIcon) mainIcon.classList.remove('hidden');
+                    } else {
+                        btn.classList.add('locked-section');
+                        if(lockIcon) lockIcon.classList.remove('hidden');
+                        if(mainIcon) mainIcon.classList.add('hidden');
+                    }
+                });
+            }
+            
+            let currentQuiz = null;
+            window.openQuiz = function(sectionId) {
+                currentQuiz = sectionId;
+                const qd = quizzes[sectionId];
+                if(!qd) return;
+                document.getElementById('quiz-title').innerText = qd.title;
+                const container = document.getElementById('quiz-questions-container');
+                container.innerHTML = '';
+                qd.questions.forEach((q, idx) => {
+                    let html = `<div class="bg-slate-50 p-4 rounded-xl border mb-4"><p class="font-bold mb-3">${idx+1}. ${q.q}</p><div class="space-y-2">`;
+                    q.options.forEach((opt, oi) => {
+                        html += `<label class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white cursor-pointer"><input type="radio" name="q${idx}" value="${oi}" class="form-radio text-gdm"><span>${opt}</span></label>`;
+                    });
+                    html += `</div><div class="feedback-${idx} text-sm mt-2 hidden"></div></div>`;
+                    container.innerHTML += html;
+                });
+                document.getElementById('quiz-submit-btn').classList.remove('hidden');
+                document.getElementById('quiz-result-container').classList.add('hidden');
+                document.getElementById('quiz-modal').classList.remove('hidden');
+            };
+            
+            window.closeQuiz = function() { document.getElementById('quiz-modal').classList.add('hidden'); };
+            
+            window.submitQuiz = function() {
+                const qd = quizzes[currentQuiz];
+                if(!qd) return;
+                let score = 0;
+                for(let i = 0; i < qd.questions.length; i++) {
+                    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                    const isCorrect = selected && parseInt(selected.value) === qd.questions[i].ans;
+                    if(isCorrect) score++;
+                    const fbDiv = document.querySelector(`.feedback-${i}`);
+                    if(fbDiv) {
+                        fbDiv.classList.remove('hidden');
+                        const correctAns = qd.questions[i].options[qd.questions[i].ans];
+                        if(isCorrect) {
+                            fbDiv.innerHTML = `<span class="text-green-700"><i class="fa-regular fa-circle-check"></i> Correct!</span>`;
+                            fbDiv.parentElement?.classList.add('quiz-feedback-correct');
+                            fbDiv.parentElement?.classList.remove('quiz-feedback-wrong');
+                        } else {
+                            const selectedText = selected ? qd.questions[i].options[parseInt(selected.value)] : "No answer";
+                            fbDiv.innerHTML = `<span class="text-red-700"><i class="fa-regular fa-circle-xmark"></i> Incorrect. Correct: ${correctAns}. Your answer: ${selectedText}</span>`;
+                            fbDiv.parentElement?.classList.add('quiz-feedback-wrong');
+                            fbDiv.parentElement?.classList.remove('quiz-feedback-correct');
+                        }
+                    }
+                }
+                const percent = (score / qd.questions.length) * 100;
+                const resultDiv = document.getElementById('quiz-result-container');
+                const btn = document.getElementById('quiz-submit-btn');
+                btn.classList.add('hidden');
+                resultDiv.classList.remove('hidden');
+                if(percent >= 75) {
+                    if(currentQuiz === 'final_quiz') {
+                        resultDiv.innerHTML = `<div class="text-amber-500 text-6xl text-center">🏆</div><h3 class="text-2xl font-black text-center">Mastery Achieved!</h3><p class="text-center">Score ${score}/${qd.questions.length} (${percent}%)</p><p class="text-center text-green-700">You have mastered Gestational Diabetes based on Adele Pillitteri.</p><button onclick="closeQuiz()" class="mt-4 w-full bg-gdm text-white py-2 rounded-lg">Close</button>`;
+                        return;
+                    }
+                    if(qd.next && !unlockedSections.includes(qd.next)) {
+                        unlockedSections.push(qd.next);
+                        if(qd.next === 'mnemonics') unlockedSections.push('final_quiz_sec');
+                        updateSidebarUI();
+                    }
+                    resultDiv.innerHTML = `<div class="text-green-600 text-5xl text-center">✓</div><h3 class="text-2xl font-black text-center">Passed!</h3><p class="text-center">Score ${score}/${qd.questions.length} (${percent}%)</p><button onclick="closeQuiz(); showSection('${qd.next}')" class="mt-4 w-full bg-green-600 text-white py-2 rounded-lg">Unlock Next Section</button>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="text-red-500 text-5xl text-center">✗</div><h3 class="text-2xl font-black text-center">Failed</h3><p class="text-center">Score ${score}/${qd.questions.length} (${percent}%). Need 75%.</p><button onclick="openQuiz('${currentQuiz}')" class="mt-4 w-full bg-slate-600 text-white py-2 rounded-lg">Try Again</button>`;
+                }
+            };
+            
+            window.toggleRecallMode = function() {
+                const active = !document.body.classList.contains('recall-mode');
+                const toggle = document.getElementById('recall-toggle'), knob = document.getElementById('recall-knob');
+                if(active) {
+                    document.body.classList.add('recall-mode');
+                    toggle.classList.add('bg-gdm');
+                    knob.classList.add('translate-x-6');
+                } else {
+                    document.body.classList.remove('recall-mode');
+                    toggle.classList.remove('bg-gdm');
+                    knob.classList.remove('translate-x-6');
+                }
+            };
+            
+            window.toggleMobileMenu = function() {
+                const s = document.getElementById('sidebar');
+                if(s.classList.contains('hidden')) s.classList.remove('hidden');
+                else s.classList.add('hidden');
+            };
+            
+            document.addEventListener('DOMContentLoaded', () => {
+                updateSidebarUI();
+                document.querySelectorAll('.reveal-text').forEach(el => {
+                    el.addEventListener('click', function() {
+                        if(document.body.classList.contains('recall-mode')) this.classList.toggle('revealed');
+                    });
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
